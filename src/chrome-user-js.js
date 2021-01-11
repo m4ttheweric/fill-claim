@@ -4,7 +4,7 @@ $(function () {
       window.location.href.indexOf('/edit') > -1
    ) {
       $.getScript(
-         'https://cdn.jsdelivr.net/gh/m4ttheweric/fill-claim@v1.2/dist/fill-claim.min.js'
+         'https://cdn.jsdelivr.net/gh/m4ttheweric/fill-claim@latest/dist/fill-claim.min.js'
       );
    }
 });
