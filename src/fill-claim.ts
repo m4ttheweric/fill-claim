@@ -49,7 +49,7 @@ interface Field {
 
    function addMagicButton() {
       const btnText =
-         getSuperVisorFromStorage() != null ? 'Magic!' : 'Setup Magic...';
+         getSuperVisorFromStorage() != null ? 'Magic Fill!' : 'Setup Magic...';
 
       $('#magical-fill').remove();
 
