@@ -22,7 +22,7 @@ interface Field {
 
    //should not need to change
    const DEFAULT_TAX_ID = '911455635';
-   const DEFAULT_PHONE = '2063639601';
+   const DEFAULT_PHONE = '(206) 363-9601';
 
    //sets drop down for id type:
    const SUPERVISOR_ID_TYPE = '0B';
