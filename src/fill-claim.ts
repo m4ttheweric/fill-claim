@@ -134,15 +134,21 @@ interface Field {
    }
 
    function fillFields(fields: Record<string, Field>) {
+      const filledStyle = { 'background-color': '#ffd5f6', color: '#111' };
       Object.entries(fields).map(([key, { selector, value }]) => {
          if ($(selector).length === 0) {
             alert('Error: Could not find field: ' + key);
          } else {
-            $(selector).val(value);
+            $(selector).val(value).css(filledStyle);
          }
       });
-
-      alert('Claim has been magicked!');
+      alert('Claim has been magicked!\n\nFilled fields are highlighted pink.');
+      $('html, body').animate(
+         {
+            scrollTop: $(fields.supervisorLastName.selector).offset().top / 1.5
+         },
+         500
+      );
    }
 
    function onMagicButton(e: any) {
