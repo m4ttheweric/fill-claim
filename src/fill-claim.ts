@@ -7,20 +7,22 @@ interface SupervisorInfo {
 interface NWFLInfo {
    taxId: string;
    phone: string;
+   [key: string]: string;
 }
+
+type ClaimInfo = SupervisorInfo & NWFLInfo;
+
 interface Field {
    selector: string;
    value: string;
 }
 
 (function ($) {
-   const SUPERVISOR_STORAGE_KEY = 'supervisorInfo';
+   const CLAIM_INFO_STORAGE_KEY = 'nwflClaimInfo';
 
    //should not need to change
-   const NWFL_INFO: NWFLInfo = {
-      taxId: '911455635',
-      phone: '2063639601'
-   };
+   const DEFAULT_TAX_ID = '911455635';
+   const DEFAULT_PHONE = '2063639601';
 
    //sets drop down for id type:
    const SUPERVISOR_ID_TYPE = '0B';
@@ -42,14 +44,14 @@ interface Field {
 
    function addButtons() {
       addMagicButton();
-      if (getSuperVisorFromStorage() != null) {
+      if (getClaimInfoFromStorage() != null) {
          addEditButton();
       }
    }
 
    function addMagicButton() {
       const btnText =
-         getSuperVisorFromStorage() != null ? 'Magic Fill!' : 'Setup Magic...';
+         getClaimInfoFromStorage() != null ? 'Magic Fill!' : 'Setup Magic...';
 
       $('#magical-fill').remove();
 
@@ -72,23 +74,22 @@ interface Field {
    }
 
    function onEditButton() {
-      localStorage.removeItem(SUPERVISOR_STORAGE_KEY);
-      getSuperVisorInfoFromUser();
+      getClaimInfoFromUser();
    }
 
-   function getSuperVisorFromStorage(): SupervisorInfo {
-      const storedSupervisorInfo = localStorage.getItem(SUPERVISOR_STORAGE_KEY);
-      if (storedSupervisorInfo != null) {
+   function getClaimInfoFromStorage(): ClaimInfo {
+      const storedClaimInfo = localStorage.getItem(CLAIM_INFO_STORAGE_KEY);
+      if (storedClaimInfo != null) {
          try {
-            const supervisorInfo = JSON.parse(storedSupervisorInfo);
+            const claimInfo = JSON.parse(storedClaimInfo);
             if (
-               !!supervisorInfo.firstName &&
-               !!supervisorInfo.lastName &&
-               !!supervisorInfo.npi &&
-               !!supervisorInfo.license
+               !!claimInfo.firstName &&
+               !!claimInfo.lastName &&
+               !!claimInfo.npi &&
+               !!claimInfo.license
             ) {
                //good to go
-               return supervisorInfo;
+               return claimInfo;
             } else {
                return null;
             }
@@ -100,15 +101,15 @@ interface Field {
       }
    }
 
-   function makeFields(supervisorInfo: SupervisorInfo): Record<string, Field> {
+   function makeFields(claimInfo: ClaimInfo): Record<string, Field> {
       return {
          supervisorLastName: {
             selector: 'input[name="box17_provider[last_name]"]',
-            value: supervisorInfo.lastName
+            value: claimInfo.lastName
          },
          supervisorFirstName: {
             selector: 'input[name="box17_provider[first_name]"]',
-            value: supervisorInfo.firstName
+            value: claimInfo.firstName
          },
          supervisorIdType: {
             selector: 'select[name="box17_provider[secondary_id_type]"]',
@@ -116,19 +117,19 @@ interface Field {
          },
          supervisorSecondaryId: {
             selector: 'input[name="box17_provider[secondary_id]"]',
-            value: supervisorInfo.license
+            value: claimInfo.license
          },
          supervisorNpi: {
             selector: 'input[name="box17_provider[npi]"]',
-            value: supervisorInfo.npi
+            value: claimInfo.npi
          },
          taxId: {
             selector: 'input[name="billing_provider[tax_id]"]',
-            value: NWFL_INFO.taxId
+            value: claimInfo.taxId
          },
          billingPhone: {
             selector: 'input[name="billing_provider[phone_number]"]',
-            value: NWFL_INFO.phone
+            value: claimInfo.phone
          }
       };
    }
@@ -152,55 +153,57 @@ interface Field {
    }
 
    function onMagicButton(e: any) {
-      const supervisorInfo = getSuperVisorFromStorage();
+      const claimInfo = getClaimInfoFromStorage();
 
-      if (!supervisorInfo) {
-         getSuperVisorInfoFromUser();
+      if (!claimInfo) {
+         getClaimInfoFromUser();
          return;
       }
 
-      fillFields(makeFields(supervisorInfo));
+      fillFields(makeFields(claimInfo));
    }
 
-   function getSuperVisorInfoFromUser() {
-      const stored = getSuperVisorFromStorage();
-      const supervisorInfo = {
-         firstName: stored != null ? stored.firstName : '',
-         lastName: stored != null ? stored.lastName : '',
-         npi: stored != null ? stored.npi : '',
-         license: stored != null ? stored.license : ''
-      };
+   const FriendlyClaimProps: ClaimInfo = Object.freeze({
+      firstName: 'Supervisor First Name (Box 17)',
+      lastName: 'Supervisor Last Name (Box 17)',
+      license: 'Supervisor License # (Box 17a)',
+      npi: 'Supervisor NPI # (Box 17b)',
+      taxId: 'Federal Tax ID # (Box 25)',
+      phone: 'Billing Provider Info Phone (Box 33)'
+   });
 
-      supervisorInfo.firstName = prompt(
-         'Supervisor First Name:',
-         supervisorInfo.firstName
-      );
-      supervisorInfo.lastName = prompt(
-         'Supervisor Last Name:',
-         supervisorInfo.lastName
-      );
-      supervisorInfo.license = prompt(
-         'Supervisor License#:',
-         supervisorInfo.license
-      );
-      supervisorInfo.npi = prompt('Supervisor NPI#:', supervisorInfo.npi);
+   function promptForClaimInfo(existing: ClaimInfo): ClaimInfo {
+      return {
+         firstName: prompt(
+            FriendlyClaimProps.firstName,
+            existing?.firstName || ''
+         ),
+         lastName: prompt(
+            FriendlyClaimProps.lastName,
+            existing?.lastName || ''
+         ),
+         license: prompt(FriendlyClaimProps.license, existing?.license || ''),
+         npi: prompt(FriendlyClaimProps.npi, existing?.npi || ''),
+         taxId: prompt(FriendlyClaimProps.taxId, DEFAULT_TAX_ID),
+         phone: prompt(FriendlyClaimProps.phone, DEFAULT_PHONE)
+      };
+   }
+   function getClaimInfoFromUser() {
+      const fromUser = promptForClaimInfo(getClaimInfoFromStorage());
 
       if (
          !confirm(
-            'Is this correct?: \n\n' +
-               Object.entries(supervisorInfo)
-                  .map(([key, value]) => `${key}: ${value}`)
+            'Is the information entered correct?: \n\n' +
+               Object.entries(fromUser)
+                  .map(([key, value]) => `${FriendlyClaimProps[key]}: ${value}`)
                   .join('\n')
          )
       ) {
       } else {
-         localStorage.setItem(
-            SUPERVISOR_STORAGE_KEY,
-            JSON.stringify(supervisorInfo)
-         );
+         localStorage.setItem(CLAIM_INFO_STORAGE_KEY, JSON.stringify(fromUser));
          addButtons();
          alert(
-            'You are good to go!\n\nIf you clear your browsing data you may need to re-enter your supervisor info.\n\nYou are now set up for magic!'
+            'If you clear your browsing data you may need to re-enter your supervisor info.\n\nYou are now set up for magic!'
          );
       }
    }
