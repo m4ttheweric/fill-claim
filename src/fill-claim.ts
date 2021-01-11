@@ -163,12 +163,27 @@ interface Field {
    }
 
    function getSuperVisorInfoFromUser() {
+      const stored = getSuperVisorFromStorage();
       const supervisorInfo = {
-         firstName: prompt('Supervisor First Name:'),
-         lastName: prompt('Supervisor Last Name:'),
-         npi: prompt('Supervisor NPI#:'),
-         license: prompt('Supervisor License#:')
+         firstName: stored != null ? stored.firstName : '',
+         lastName: stored != null ? stored.lastName : '',
+         npi: stored != null ? stored.npi : '',
+         license: stored != null ? stored.license : ''
       };
+
+      supervisorInfo.firstName = prompt(
+         'Supervisor First Name:',
+         supervisorInfo.firstName
+      );
+      supervisorInfo.lastName = prompt(
+         'Supervisor Last Name:',
+         supervisorInfo.lastName
+      );
+      supervisorInfo.license = prompt(
+         'Supervisor License#:',
+         supervisorInfo.license
+      );
+      supervisorInfo.npi = prompt('Supervisor NPI#:', supervisorInfo.npi);
 
       if (
          !confirm(
