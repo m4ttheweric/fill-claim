@@ -17,13 +17,13 @@ interface Field {
    const SUPERVISOR_STORAGE_KEY = 'supervisorInfo';
 
    //should not need to change
-   const nwflInfo: NWFLInfo = {
+   const NWFL_INFO: NWFLInfo = {
       taxId: '911455635',
       phone: '2063639601'
    };
 
    //sets drop down for id type:
-   const supervisorIdType = '0B';
+   const SUPERVISOR_ID_TYPE = '0B';
 
    //should not need to change
 
@@ -65,7 +65,7 @@ interface Field {
    function addEditButton() {
       $('#edit-magic').remove();
       const btn = $(
-         '<a style="align-self: center;padding: 8px;" id="edit-magic" href="javascript:void(0)">Edit Supervisor</a>'
+         '<a style="align-self: center;padding: 8px;" id="edit-magic" href="javascript:void(0)">Edit</a>'
       ).on('click', onEditButton);
 
       $('#control-bar div.actions').append(btn);
@@ -100,15 +100,8 @@ interface Field {
       }
    }
 
-   function onMagicButton(e: any) {
-      const supervisorInfo = getSuperVisorFromStorage();
-
-      if (!supervisorInfo) {
-         getSuperVisorInfoFromUser();
-         return;
-      }
-
-      const fields: Record<string, Field> = {
+   function makeFields(supervisorInfo: SupervisorInfo): Record<string, Field> {
+      return {
          supervisorLastName: {
             selector: 'input[name="box17_provider[last_name]"]',
             value: supervisorInfo.lastName
@@ -119,7 +112,7 @@ interface Field {
          },
          supervisorIdType: {
             selector: 'select[name="box17_provider[secondary_id_type]"]',
-            value: supervisorIdType
+            value: SUPERVISOR_ID_TYPE
          },
          supervisorSecondaryId: {
             selector: 'input[name="box17_provider[secondary_id]"]',
@@ -131,14 +124,16 @@ interface Field {
          },
          taxId: {
             selector: 'input[name="billing_provider[tax_id]"]',
-            value: nwflInfo.taxId
+            value: NWFL_INFO.taxId
          },
          billingPhone: {
             selector: 'input[name="billing_provider[phone_number]"]',
-            value: nwflInfo.phone
+            value: NWFL_INFO.phone
          }
       };
+   }
 
+   function fillFields(fields: Record<string, Field>) {
       Object.entries(fields).map(([key, { selector, value }]) => {
          if ($(selector).length === 0) {
             alert('Error: Could not find field: ' + key);
@@ -148,6 +143,17 @@ interface Field {
       });
 
       alert('Claim has been magicked!');
+   }
+
+   function onMagicButton(e: any) {
+      const supervisorInfo = getSuperVisorFromStorage();
+
+      if (!supervisorInfo) {
+         getSuperVisorInfoFromUser();
+         return;
+      }
+
+      fillFields(makeFields(supervisorInfo));
    }
 
    function getSuperVisorInfoFromUser() {
