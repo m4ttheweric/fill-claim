@@ -3,7 +3,7 @@
 ## Requirements: 
 
 * Google Chrome Browser on a Mac or PC
-* Installation of the <a href="https://chrome.google.com/webstore/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld" target="_blank">User Javascript and CSS</a> Chrome extension.
+* Installation of the <a href="https://chrome.google.com/webstore/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld" target="_blank">User Javascript and CSS</a> Chrome extension. This allows us to run a custom script to do the magic!
 
 ## Setup: 
 
