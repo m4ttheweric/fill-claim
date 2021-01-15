@@ -36,10 +36,8 @@ interface Field {
    });
 
    function isEditClaimPage() {
-      return (
-         window.location.href.indexOf('insurance_claims') > -1 &&
-         window.location.href.indexOf('/edit') > -1
-      );
+      const urlRegex = /https:\/\/secure\.simplepractice\.com\/clients\/\w*\/insurance_claims\/\d*\/edit/i;
+      return urlRegex.test(window.location.href);
    }
 
    function addButtons() {
