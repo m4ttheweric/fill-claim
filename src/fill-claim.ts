@@ -1,3 +1,43 @@
+const overlayHtml = `<div
+id="full-screen-overlay"
+style="
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-start;
+   align-items: center;
+   position: fixed;
+   left: 0;
+   top: 0;
+   background-color: rgba(0, 0, 0, 0.5);
+   width: 100vw;
+   height: 100vh;
+   z-index: 2000;
+"
+>
+<div
+   style="
+      width: 100%;
+      height: auto;
+      max-width: 225px;
+      left: 50%;
+      background-color: #fff;
+      padding: 20px 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px 1px rgb(0 0 0 / 40%);
+      margin-top: 10vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+   "
+>
+   <p style="font-size: 15px">Your claim has been filled!</p>
+   <p style="margin-bottom:20px;">It will submit in 3 seconds...</p>
+   <a id="cancel-submission" class="button primary">Cancel Submission</a>
+</div>
+</div>
+`;
+
 interface SupervisorInfo {
    firstName: string;
    lastName: string;
@@ -49,17 +89,23 @@ interface Field {
 
    function addMagicButton() {
       const btnText =
-         getClaimInfoFromStorage() != null ? 'Magic Fill!' : 'Setup Magic...';
+         getClaimInfoFromStorage() != null
+            ? 'Magic Fill & Submit!'
+            : 'Setup Magic...';
 
       $('#magical-fill').remove();
 
       const btn = $(
-         '<a class="button primary" id="magical-fill" href="javascript:void(0)">' +
+         '<a class="button primary" id="magical-fill" style="background-color: #8a2be2;" href="javascript:void(0)">' +
             btnText +
             '</a>'
       ).on('click', onMagicButton);
 
       $('#control-bar div.actions').append(btn);
+   }
+
+   function submitClaim() {
+      $('#control-bar div.actions a.button[data-submit-claim="true"]').click();
    }
 
    function addEditButton() {
@@ -132,16 +178,35 @@ interface Field {
       };
    }
 
+   function showOverlay() {
+      $('body').append(overlayHtml);
+      let timeout: number = null;
+      $('#full-screen-overlay #cancel-submission').on('click', () => {
+         clearTimeout(timeout);
+         $('#full-screen-overlay').remove();
+      });
+      timeout = setTimeout(() => {
+         $('#full-screen-overlay').remove();
+         submitClaim();
+      }, 3000);
+   }
+
    function fillFields(fields: Record<string, Field>) {
       const filledStyle = { 'background-color': '#ffd5f6', color: '#111' };
       Object.entries(fields).map(([key, { selector, value }]) => {
          if ($(selector).length === 0) {
-            alert('Error: Could not find field: ' + key);
+            throw new Error('Error: Could not find field: ' + key);
          } else {
             $(selector).val(value).css(filledStyle);
          }
       });
-      alert('Claim has been magicked!\n\nFilled fields are highlighted pink.');
+      scrollToFields(fields);
+      showOverlay();
+      //alert('Claim has been magicked!\n\nFilled fields are highlighted pink.');
+      //scrollToFields(fields);
+   }
+
+   function scrollToFields(fields: Record<string, Field>) {
       $('html, body').animate(
          {
             scrollTop: $(fields.supervisorLastName.selector).offset().top / 1.5
