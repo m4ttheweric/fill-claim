@@ -4,7 +4,7 @@
    "main": "index.js",
    "license": "MIT",
    "scripts": {
-      "build": "npx tsc && uglifyjs output/fill-claim.js -c -o dist/fill-claim.min.js"
+      "build": "npx tsc && uglifyjs output/fill-claim.js -c -o dist/fill-claim.min.js && uglifyjs output/inject.js -c -o dist/inject.min.js"
    },
    "devDependencies": {
       "typescript": "^4.1.3",
