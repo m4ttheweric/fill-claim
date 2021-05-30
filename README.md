@@ -27,3 +27,5 @@ Generally the same approach, but using the `Code Injector` extension listed abov
 Fields that have been filled appear highlighted pink.
 
 If you ever clear your browsing data/cache, you may need to re-renter the info.
+
+As of v1.4, you can also 1) open all "Prepared" claims in new tabs with a single button click, and 2) open, fill, and submit all "Prepared" claims with a single button click.
