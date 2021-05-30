@@ -18,21 +18,32 @@ $(function () {
       },
       autoEdit: {
          urlTest: () =>
-            /\/insurance_claims\/\d+\?editMe=y/i.test(window.location.href),
+            /\/insurance_claims\/\d+\?(editAndMagic=y|editMe=y)/i.test(
+               window.location.href
+            ),
          inject: () => {
-            location.href = document.URL.replace(
-               '?editMe=y',
-               '/edit?autoMagicFill=y'
-            );
+            if (/\?editAndMagic=y/i.test(window.location.href)) {
+               location.href = document.URL.replace(
+                  '?editAndMagic=y',
+                  '/edit?autoMagicFill=y'
+               );
+            } else {
+               location.href = document.URL.replace('?editMe=y', '/edit');
+            }
          }
       },
       openClaimsInTabs: {
          urlTest: () =>
             /\/billings\/insurance#claims/i.test(window.location.href),
          inject: () => {
-            const openButton = `<a class="primary button" href="javascript:void(0)" style="float: right;margin-bottom: 18px;background-color: #8a2be2;">Magic Fill All Prepared Claims!</a>`;
+            const magicFillButtonHtml = `<a class="primary button" href="javascript:void(0)" style="float: right;margin-bottom: 18px;background-color: #8a2be2;">Magic Fill All Prepared Claims!</a>`;
+            const openButtonHtml = `<a class="primary button" href="javascript:void(0)" style="float: right;margin-left: 8px;margin-bottom: 18px;background-color: #8a2be2;">Open All Prepared Claims!</a>`;
 
-            function openInTabs() {
+            function launchClaim(launchStyle: 'magic' | 'open') {
+               const magic = '?editAndMagic=y';
+               const justOpen = '?editMe=y';
+               const queryString = launchStyle === 'magic' ? magic : justOpen;
+
                $('table.insurance-claims-list tr')
                   .filter(function (this: any) {
                      return (
@@ -41,14 +52,23 @@ $(function () {
                      );
                   })
                   .each(function (this: any) {
-                     window.open($(this).data('url') + '?editMe=y', '_blank');
+                     console.log(
+                        'opening: ',
+                        $(this).data('url') + queryString
+                     );
+                     window.open($(this).data('url') + queryString, '_blank');
                   });
             }
             function addButton() {
-               const btn = $(openButton).on('click', () => {
-                  openInTabs();
+               const magicBtn = $(magicFillButtonHtml).on('click', () => {
+                  launchClaim('magic');
                });
-               $('#claims').prepend(btn);
+               const openBtn = $(openButtonHtml).on('click', () => {
+                  launchClaim('open');
+               });
+
+               $('#claims').prepend(magicBtn);
+               $('#claims').prepend(openBtn);
             }
 
             addButton();
