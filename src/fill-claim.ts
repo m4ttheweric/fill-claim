@@ -72,11 +72,20 @@ interface Field {
    $(function () {
       if (isEditClaimPage()) {
          addButtons();
+
+         if (
+            /\?autoMagicFill=y/i.test(window.location.href) &&
+            getClaimInfoFromStorage() != null
+         ) {
+            //url says to auto fill, and the claim info is in storage!
+            onMagicButton();
+         }
       }
    });
 
    function isEditClaimPage() {
-      const urlRegex = /https:\/\/secure\.simplepractice\.com\/clients\/\w*\/insurance_claims\/\d*\/edit/i;
+      const urlRegex =
+         /https:\/\/secure\.simplepractice\.com\/clients\/\w*\/insurance_claims\/\d*\/edit/i;
       return urlRegex.test(window.location.href);
    }
 
@@ -215,7 +224,7 @@ interface Field {
       );
    }
 
-   function onMagicButton(e: any) {
+   function onMagicButton(e: any = null) {
       const claimInfo = getClaimInfoFromStorage();
 
       if (!claimInfo) {
