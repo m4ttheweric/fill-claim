@@ -28,4 +28,4 @@ Fields that have been filled appear highlighted pink.
 
 If you ever clear your browsing data/cache, you may need to re-renter the info.
 
-As of v1.4, you can also 1) open all "Prepared" claims in new tabs with a single button click, and 2) open, fill, and submit all "Prepared" claims with a single button click.
+As of v1.4, you can also 1) open all "Prepared" claims in new tabs with a single button click, and 2) open, fill, and submit all "Prepared" claims with a single button click. This requires copying the latest from [/dist/inject.min.js](/dist/inject.min.js) into your inject mechanism in Chrome/Safari.
