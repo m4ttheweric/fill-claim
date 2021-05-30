@@ -13,7 +13,7 @@
 2. Click the extensions button in the Chrome menu bar and select the `User Javascript and CSS` extension
 3. Hit `+ Add New` when you see the `Rules For This Page` window appear. This should open a new tab where you will configure the script.
 4. Type `Simple Practice` or whatever you want into the `Name` field.
-5. In the leftmost large box below with the `JS` title in the top-left, paste in the contents from [/src/inject.js](/src/inject.js), hit the `Save` button and close the tab to return to Simple Practice.
+5. In the leftmost large box below with the `JS` title in the top-left, paste in the contents from [/dist/inject.min.js](/dist/inject.min.js), hit the `Save` button and close the tab to return to Simple Practice.
 
 ## Firefox Setup:
 
