@@ -1,6 +1,7 @@
 interface Injection {
    urlTest: () => boolean;
    inject: () => void;
+   injected: boolean;
 }
 
 declare var $: any;
@@ -14,7 +15,8 @@ $(function () {
             $.getScript(
                'https://cdn.jsdelivr.net/gh/m4ttheweric/fill-claim@latest/dist/fill-claim.min.js'
             );
-         }
+         },
+         injected: false
       },
       autoEdit: {
          urlTest: () =>
@@ -30,7 +32,8 @@ $(function () {
             } else {
                location.href = document.URL.replace('?editMe=y', '/edit');
             }
-         }
+         },
+         injected: false
       },
       openClaimsInTabs: {
          urlTest: () =>
@@ -72,13 +75,21 @@ $(function () {
             }
 
             addButton();
-         }
+         },
+         injected: false
       }
    };
 
-   Object.entries(injections).forEach(([prop, injection]) => {
-      if (injection.urlTest()) {
-         injection.inject();
-      }
-   });
+   function testInjections() {
+      Object.entries(injections).forEach(([prop, injection]) => {
+         if (injection.urlTest() && injection.injected === false) {
+            injection.inject();
+            injection.injected = true;
+         }
+      });
+   }
+
+   testInjections();
+
+   window.addEventListener('hashchange', testInjections, false);
 });
